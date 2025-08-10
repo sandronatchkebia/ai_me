@@ -1,0 +1,11 @@
+# Core dependencies
+tqdm>=4.64.0
+
+# Optional dependencies for enhanced functionality
+langdetect>=1.0.9
+
+# Development dependencies (uncomment if needed)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=5.0.0
+# mypy>=0.991
