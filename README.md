@@ -3,30 +3,6 @@
 AI_ME is an end-to-end pipeline for fine-tuning a Large Language Model (LLM) to emulate a user’s communication style.  
 It parses personal conversation data from multiple platforms, preprocesses it, and prepares it for model fine-tuning.
 
----
-## 📂 Project Structure
-
-AI_ME/
-├── data/
-│ ├── processed/ # Parsed & cleaned JSONL files ready for fine-tuning
-│ ├── raw/ # Raw exports from Google Takeout, Meta, etc.
-│ │ ├── instagram/
-│ │ ├── messenger/
-│ │ ├── whatsapp/
-│ │ └── .gmail.mbox.icloud
-│ └── samples/ # Example processed outputs
-├── fine_tuning/ # [Placeholder] Fine-tuning scripts & configs
-├── parsers/ # Platform-specific data parsers
-│ ├── gmail_parser.py
-│ ├── instagram_parser.py
-│ ├── messenger_parser.py
-│ ├── whatsapp_parser.py
-│ ├── normalizer.py
-├── pre_processing/ # [Placeholder] Data cleaning & transformation scripts
-├── README.md
-
----
-
 ## 🚀 Pipeline Overview
 
 1. **Data Export**  
