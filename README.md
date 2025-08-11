@@ -13,6 +13,21 @@ The goal is to create an AI assistant that sounds and writes like you by learnin
 
 ## 🚀 Pipeline Overview
 
+## 📈 Current Status
+
+**✅ COMPLETED:**
+- Data parsing from Gmail, Instagram, and WhatsApp
+- Advanced data preprocessing with email cleaning
+- Dataset preparation in HuggingFace chat format
+- 33,024 training examples and 6,405 validation examples ready
+
+**🔄 IN PROGRESS:**
+- LoRA fine-tuning setup (requires cloud VM due to PyTorch compatibility)
+
+**🔮 PLANNED:**
+- Model deployment and evaluation
+- Style consistency monitoring
+
 ### Phase 1: Data Export & Parsing ✅ **IMPLEMENTED**
 1. **Data Export**  
    Export your data from:
@@ -29,13 +44,15 @@ The goal is to create an AI assistant that sounds and writes like you by learnin
    - Handles encoding issues and emoji processing
    - Outputs standardized `.jsonl` files in `data/processed`
 
-### Phase 2: Data Preprocessing 🔄 **PLANNED**
+### Phase 2: Data Preprocessing ✅ **IMPLEMENTED**
 - **Deduplication**: Remove duplicate messages and conversations
 - **Language Filtering**: Focus on primary languages (e.g., English, Georgian)
 - **Quality Filtering**: Remove low-value/system messages, short responses
 - **Conversation Structuring**: Organize messages into proper conversation flows
 - **Dataset Splitting**: Create train/validation/test sets for fine-tuning
 - **Instruction Formatting**: Convert conversations to instruction-response pairs
+- **Email Cleaning**: Advanced signature/quote removal, HTML entity cleaning
+- **Chat Formatting**: Convert to HuggingFace chat format with system/user/assistant messages
 
 ### Phase 3: Model Fine-tuning 🔮 **PLANNED**
 - **Model Selection**: Choose appropriate open-source LLM (e.g., Llama 3, Mistral)
@@ -94,8 +111,13 @@ All parsers output records with consistent fields for unified processing:
 git clone https://github.com/sandronatchkebia/ai_me.git
 cd ai_me
 
-# Install dependencies
+# Install dependencies using uv (recommended) or pip
+uv add transformers datasets tokenizers huggingface-hub
+# OR
 pip install -r requirements.txt
+
+# Note: PEFT and TRL require PyTorch which may not be available on all platforms
+# These will be installed on the training VM/cloud instance
 
 # Set up data directories
 mkdir -p data/raw data/processed

@@ -1,11 +1,20 @@
-# Core dependencies
+# Core dependencies for data processing and analysis
 tqdm>=4.64.0
-
-# Optional dependencies for enhanced functionality
 langdetect>=1.0.9
 
-# Development dependencies (uncomment if needed)
-# pytest>=7.0.0
-# black>=22.0.0
-# flake8>=5.0.0
-# mypy>=0.991
+# Hugging Face ecosystem (installed and working)
+transformers>=4.55.0
+datasets>=4.0.0
+tokenizers>=0.21.4
+huggingface-hub>=0.34.4
+
+# Data processing
+numpy>=2.3.2
+pandas>=2.3.1
+pyarrow>=21.0.0
+
+# Note: PEFT and TRL require PyTorch which doesn't have wheels for macOS 13.0 x86_64
+# These will be installed on the training VM/cloud instance
+# peft>=0.5.0
+# trl>=0.7.0
+# torch>=2.0.0

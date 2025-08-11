@@ -234,6 +234,25 @@ $RECYCLE.BIN/
 data/raw/
 data/processed/
 data/samples/
+data/preprocessed/
+
+# Fine-tuning outputs and models
+fine_tuning/dataset/
+fine_tuning/out/
+fine_tuning/models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python package management
+pyproject.toml
+uv.lock
 
 # Temporary and test files
 *.tmp
