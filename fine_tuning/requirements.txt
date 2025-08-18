@@ -1,0 +1,41 @@
+# GPU Cluster Training Requirements for ai_me LoRA Fine-tuning
+# Install with: pip install -r requirements.txt
+
+# Core ML libraries
+torch>=2.0.0
+torchvision
+torchaudio
+
+# Transformers and PEFT
+transformers>=4.36.0
+peft>=0.7.0
+accelerate>=0.24.0
+
+# Dataset handling
+datasets>=2.14.0
+tokenizers>=0.15.0
+
+# Quantization
+bitsandbytes>=0.41.0
+
+# Training optimization
+flash-attn>=2.3.0  # For faster attention computation
+xformers>=0.0.22   # Alternative attention optimization
+
+# Monitoring and logging
+wandb>=0.15.0      # Optional: for experiment tracking
+tensorboard>=2.14.0
+
+# Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+tqdm>=4.65.0
+
+# Optional: For specific model architectures
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+
+# Development and debugging
+ipython>=8.0.0
+jupyter>=1.0.0
