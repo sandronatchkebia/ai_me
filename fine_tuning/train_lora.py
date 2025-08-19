@@ -113,10 +113,11 @@ def build_model(
             torch_dtype=torch_dtype,
             device_map=device_map,
             trust_remote_code=True,
-            attn_implementation="flash_attention_2" if torch.cuda.is_available() else "eager",
+            attn_implementation="sdpa",
         )
         
-        logger.info(f"Model loaded: {model.config.model_type}, {model.config.num_parameters:,} parameters")
+        param_count = sum(p.numel() for p in model.parameters())
+        logger.info(f"Model loaded: {model.config.model_type}, {param_count:,} parameters")
         return model
         
     except Exception as e:
@@ -388,12 +389,16 @@ def main():
         # 5) Format dataset
         logger.info("Formatting dataset...")
         def format_dataset(examples):
-            formatted = []
-            for example in examples:
-                formatted_example = format_chat_example(example, tokenizer)
-                if formatted_example:
-                    formatted.append(formatted_example)
-            return formatted
+            messages_batch = examples["messages"]
+            texts = []
+            for messages in messages_batch:
+                formatted = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=False,
+                )
+                texts.append(formatted)
+            return {"text": texts}
         
         train_dataset = dsd["train"].map(
             format_dataset,
