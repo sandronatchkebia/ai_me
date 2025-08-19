@@ -421,10 +421,33 @@ def main():
             desc="Formatting validation data"
         )
         
-        # 6) Create data collator
+        # 6) Tokenize to produce input_ids/attention_mask for Trainer
+        def tokenize_batch(batch):
+            return tokenizer(
+                batch["text"],
+                truncation=True,
+                max_length=args.max_seq_len,
+                padding=False,
+            )
+
+        train_dataset = train_dataset.map(
+            tokenize_batch,
+            batched=True,
+            remove_columns=train_dataset.column_names,
+            desc="Tokenizing train"
+        )
+
+        eval_dataset = eval_dataset.map(
+            tokenize_batch,
+            batched=True,
+            remove_columns=eval_dataset.column_names,
+            desc="Tokenizing eval"
+        )
+
+        # 7) Create data collator (labels = input_ids for causal LM)
         data_collator = create_data_collator(tokenizer, args.max_seq_len)
         
-        # 7) Create training arguments
+        # 8) Create training arguments
         training_args = create_training_arguments(
             output_dir=str(output_dir),
             num_train_epochs=args.epochs,
@@ -443,7 +466,7 @@ def main():
             ddp_find_unused_parameters=args.ddp_find_unused_parameters,
         )
         
-        # 8) Create trainer
+        # 9) Create trainer
         logger.info("Setting up trainer...")
         trainer = Trainer(
             model=model,
@@ -454,11 +477,11 @@ def main():
             data_collator=data_collator,
         )
         
-        # 9) Train
+        # 10) Train
         logger.info("Starting training...")
         trainer.train()
         
-        # 10) Save final model
+        # 11) Save final model
         logger.info("Saving final model...")
         trainer.save_model()
         tokenizer.save_pretrained(output_dir)
