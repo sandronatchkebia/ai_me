@@ -239,9 +239,6 @@ def create_training_arguments(
         per_device_train_batch_size=per_device_train_batch_size,
         per_device_eval_batch_size=per_device_eval_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
-        evaluation_strategy="steps",
-        eval_steps=eval_steps,
-        save_strategy="steps",
         save_steps=save_steps,
         save_total_limit=save_total_limit,
         logging_steps=logging_steps,
@@ -250,32 +247,22 @@ def create_training_arguments(
         remove_unused_columns=remove_unused_columns,
         report_to=report_to,
         ddp_find_unused_parameters=ddp_find_unused_parameters,
-        load_best_model_at_end=True,
-        metric_for_best_model="eval_loss",
-        greater_is_better=False,
         logging_dir=f"{output_dir}/logs",
         run_name="ai_me_lora_training",
         dataloader_num_workers=4,
         group_by_length=True,
         save_safetensors=True,
     )
-    # If this transformers version does not support evaluation/save strategy, drop related args
-    if "evaluation_strategy" not in sig_params:
-        for k in [
-            "evaluation_strategy",
-            "eval_steps",
-            "save_strategy",
-            "save_steps",
-            "load_best_model_at_end",
-            "metric_for_best_model",
-            "greater_is_better",
-        ]:
-            kwargs.pop(k, None)
-    else:
-        # Ensure strategies match when supported
-        kwargs["evaluation_strategy"] = "steps"
-        if "save_strategy" in sig_params:
-            kwargs["save_strategy"] = "steps"
+    # Avoid evaluation/save strategy keys entirely for broad compatibility
+    for k in [
+        "evaluation_strategy",
+        "eval_steps",
+        "save_strategy",
+        "load_best_model_at_end",
+        "metric_for_best_model",
+        "greater_is_better",
+    ]:
+        kwargs.pop(k, None)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if k in sig_params}
     return TrainingArguments(**filtered_kwargs)
