@@ -209,7 +209,6 @@ def create_training_arguments(
     learning_rate: float = 1.5e-4,
     warmup_ratio: float = 0.02,
     weight_decay: float = 0.05,
-    max_seq_length: int = 2048,
     per_device_train_batch_size: int = 1,
     per_device_eval_batch_size: int = 1,
     gradient_accumulation_steps: int = 16,
@@ -223,18 +222,20 @@ def create_training_arguments(
     report_to: Optional[List[str]] = None,
     ddp_find_unused_parameters: bool = False,
 ):
-    """Create training arguments."""
+    """Create training arguments with backward-compatible kwargs filtering."""
     if report_to is None:
         report_to = []
-    
-    return TrainingArguments(
+
+    # Construct kwargs and filter by TrainingArguments signature for compatibility
+    import inspect
+    sig_params = set(inspect.signature(TrainingArguments.__init__).parameters.keys())
+    kwargs = dict(
         output_dir=output_dir,
         num_train_epochs=num_train_epochs,
         learning_rate=learning_rate,
         lr_scheduler_type="cosine",
         warmup_ratio=warmup_ratio,
         weight_decay=weight_decay,
-        max_seq_length=max_seq_length,
         per_device_train_batch_size=per_device_train_batch_size,
         per_device_eval_batch_size=per_device_eval_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
@@ -249,23 +250,17 @@ def create_training_arguments(
         remove_unused_columns=remove_unused_columns,
         report_to=report_to,
         ddp_find_unused_parameters=ddp_find_unused_parameters,
-        # Distributed training
-        ddp_backend="nccl" if torch.cuda.is_available() else "gloo",
-        # Checkpointing
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
-        # Logging
         logging_dir=f"{output_dir}/logs",
         run_name="ai_me_lora_training",
-        # Optimizations
         dataloader_num_workers=4,
         group_by_length=True,
-        length_column_name="length",
-        # Save everything
         save_safetensors=True,
-        save_adapter=True,
     )
+    filtered_kwargs = {k: v for k, v in kwargs.items() if k in sig_params}
+    return TrainingArguments(**filtered_kwargs)
 
 
 def main():
@@ -365,6 +360,11 @@ def main():
         # 2) Load tokenizer
         logger.info("Loading tokenizer...")
         tokenizer = build_tokenizer(args.model_id, args.trust_remote_code)
+        # Respect CLI sequence length even if TrainingArguments lacks max_seq_length
+        try:
+            tokenizer.model_max_length = args.max_seq_len
+        except Exception:
+            pass
         
         # 3) Load model
         logger.info("Loading model...")
