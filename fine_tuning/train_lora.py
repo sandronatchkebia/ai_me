@@ -431,7 +431,6 @@ def main():
             learning_rate=args.learning_rate,
             warmup_ratio=args.warmup_ratio,
             weight_decay=args.weight_decay,
-            max_seq_length=args.max_seq_len,
             per_device_train_batch_size=args.per_device_train_batch_size,
             per_device_eval_batch_size=args.per_device_eval_batch_size,
             gradient_accumulation_steps=args.gradient_accumulation_steps,
