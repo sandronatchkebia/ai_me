@@ -259,6 +259,24 @@ def create_training_arguments(
         group_by_length=True,
         save_safetensors=True,
     )
+    # If this transformers version does not support evaluation/save strategy, drop related args
+    if "evaluation_strategy" not in sig_params:
+        for k in [
+            "evaluation_strategy",
+            "eval_steps",
+            "save_strategy",
+            "save_steps",
+            "load_best_model_at_end",
+            "metric_for_best_model",
+            "greater_is_better",
+        ]:
+            kwargs.pop(k, None)
+    else:
+        # Ensure strategies match when supported
+        kwargs["evaluation_strategy"] = "steps"
+        if "save_strategy" in sig_params:
+            kwargs["save_strategy"] = "steps"
+
     filtered_kwargs = {k: v for k, v in kwargs.items() if k in sig_params}
     return TrainingArguments(**filtered_kwargs)
 
