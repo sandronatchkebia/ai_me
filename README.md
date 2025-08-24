@@ -20,13 +20,17 @@ The goal is to create an AI assistant that sounds and writes like you by learnin
 - Advanced data preprocessing with email cleaning
 - Dataset preparation in HuggingFace chat format
 - 33,024 training examples and 6,405 validation examples ready
+- **LoRA fine-tuning pipeline** with Google Colab integration
+- **Model testing and comparison** notebooks
+- **Comprehensive setup guides** for training and evaluation
 
 **🔄 IN PROGRESS:**
-- LoRA fine-tuning setup (requires cloud VM due to PyTorch compatibility)
-
-**🔮 PLANNED:**
 - Model deployment and evaluation
 - Style consistency monitoring
+
+**🔮 PLANNED:**
+- Web interface for model interaction
+- Style consistency monitoring over time
 
 ### Phase 1: Data Export & Parsing ✅ **IMPLEMENTED**
 1. **Data Export**  
@@ -183,23 +187,31 @@ python preprocessing/dataset_splitter.py \
 
 ---
 
-## 🤖 Fine-tuning Pipeline (Planned)
+## 🤖 Fine-tuning Pipeline ✅ **IMPLEMENTED**
+
+### Google Colab Integration
+The project now includes ready-to-use Google Colab notebooks for easy fine-tuning:
+
+- **`run_lora_colab.ipynb`**: Complete training pipeline with automatic setup
+- **`testing_model.ipynb`**: Compare base vs fine-tuned models side-by-side
+- **`COLAB_SETUP.md`**: Comprehensive setup guide and troubleshooting
+
+### Quick Start with Colab
+1. **Set up Hugging Face API key** in Colab secrets
+2. **Upload your prepared dataset** (ai_me_chat.zip)
+3. **Run the training notebook** - automatically handles all setup
+4. **Test your model** with the comparison notebook
 
 ### LoRA Configuration
 ```bash
-# Example LoRA fine-tuning (to be implemented)
+# Command-line training (alternative to Colab)
 python fine_tuning/train_lora.py \
-  --dataset data/fine_tuning/train.jsonl \
-  --val_dataset data/fine_tuning/val.jsonl \
-  --model "meta-llama/Llama-3-8B-Instruct" \
-  --output_dir ./models/ai_me_lora \
-  --lora_r 16 \
-  --lora_alpha 32 \
-  --lora_dropout 0.1 \
-  --epochs 3 \
-  --batch_size 4 \
-  --learning_rate 2e-4 \
-  --max_seq_length 2048
+  --model_id "meta-llama/Meta-Llama-3.1-8B-Instruct" \
+  --dataset_dir "fine_tuning/dataset/ai_me_chat" \
+  --output_dir "fine_tuning/out/ai_me_lora" \
+  --epochs 2.0 --learning_rate 1.5e-4 --max_seq_len 2048 \
+  --per_device_train_batch_size 2 --gradient_accumulation_steps 8 \
+  --load_4bit --bf16
 ```
 
 ### Training Features
@@ -207,6 +219,33 @@ python fine_tuning/train_lora.py \
 - **Style Preservation**: Focus on maintaining your unique communication patterns
 - **Conversation Context**: Train on full conversation flows, not just individual messages
 - **Multi-platform Learning**: Combine data from all sources for comprehensive style modeling
+- **4-bit Quantization**: Memory-efficient training on consumer GPUs
+- **Automatic Tokenization**: Optimized for length grouping and efficiency
+
+---
+
+## 🧪 Model Testing & Evaluation ✅ **IMPLEMENTED**
+
+### Testing Capabilities
+The `testing_model.ipynb` notebook provides comprehensive model evaluation:
+
+- **Side-by-side Comparison**: Base model vs your fine-tuned version
+- **Rewrite Tool Testing**: Demonstrate style transfer capabilities
+- **Interactive Testing**: Custom prompts and real-time comparison
+- **Style Analysis**: Systematic analysis of writing style differences
+
+### Key Use Cases
+- **Style Transfer**: Convert formal text to your conversational style
+- **Tone Adjustment**: Make professional content sound personal
+- **Content Refinement**: Improve and personalize existing text
+- **A/B Testing**: See the difference between base and fine-tuned models
+
+### Testing Workflow
+1. **Load both models** (base and fine-tuned)
+2. **Compare responses** to identical prompts
+3. **Test rewrite capabilities** with sample texts
+4. **Interactive testing** with your own prompts
+5. **Style analysis** and comparison
 
 ---
 
@@ -219,13 +258,15 @@ ai_me/
 │   ├── instagram_parser.py
 │   ├── whatsapp_parser.py
 │   └── messenger_parser.py
-├── preprocessing/           # Data cleaning & preparation 🔄
+├── preprocessing/           # Data cleaning & preparation ✅
 │   ├── clean_data.py       # Deduplication, filtering
 │   ├── conversation_builder.py  # Structure conversations
 │   └── dataset_splitter.py # Train/val/test splits
-├── fine_tuning/            # Model training pipeline 🔮
+├── fine_tuning/            # Model training pipeline ✅
 │   ├── train_lora.py       # LoRA fine-tuning
-│   ├── evaluate.py         # Model evaluation
+│   ├── run_lora_colab.ipynb # Google Colab training notebook
+│   ├── testing_model.ipynb  # Model comparison & testing
+│   ├── COLAB_SETUP.md      # Colab setup guide
 │   └── configs/            # Training configurations
 ├── models/                 # Trained models & checkpoints 🔮
 ├── data/                   # Data storage
@@ -268,9 +309,10 @@ ai_me/
 - ✅ **Data Parsing**: Gmail, Instagram, WhatsApp parsers fully implemented
 - ✅ **Data Standardization**: Consistent JSONL schema across all platforms
 - ✅ **Encoding Handling**: Robust UTF-8 and mojibake correction
-- 🔄 **Preprocessing**: Data cleaning and conversation structuring (in development)
-- 🔮 **Fine-tuning**: LoRA training pipeline (planned)
-- 🔮 **Model Deployment**: Inference serving and API (planned)
+- ✅ **Data Preprocessing**: Data cleaning and conversation structuring implemented
+- ✅ **Fine-tuning**: LoRA training pipeline with Google Colab integration
+- ✅ **Model Testing**: Side-by-side comparison and evaluation notebooks
+- 🔄 **Model Deployment**: Inference serving and API (in development)
 
 ---
 
