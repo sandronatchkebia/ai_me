@@ -487,7 +487,14 @@ def main():
         tokenizer.save_pretrained(output_dir)
         
         # Save training config
-        training_args.save_to_json(output_dir / "training_args.json")
+        try:
+            training_args.save_to_json(output_dir / "training_args.json")
+        except AttributeError:
+            # For newer transformers versions, save manually
+            import json
+            config_dict = training_args.to_dict()
+            with open(output_dir / "training_args.json", "w") as f:
+                json.dump(config_dict, f, indent=2)
         
         logger.info(f"Training completed! Model saved to: {output_dir.resolve()}")
         
