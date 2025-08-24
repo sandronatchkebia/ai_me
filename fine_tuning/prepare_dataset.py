@@ -40,7 +40,7 @@ def load_jsonl(path: Path) -> List[Dict[str, Any]]:
     print(f"[INFO] Loaded {len(items)} items from {path.name}")
     return items
 
-def detect_files(folder: Path) -> Dict[str, List[Path]]:
+def detect_files(folder: Path, language: str = None) -> Dict[str, List[Path]]:
     """Detect available files with language-based directory structure."""
     expected_files = {
         "pairs_train": [],
@@ -51,14 +51,24 @@ def detect_files(folder: Path) -> Dict[str, List[Path]]:
         "mono_test":   [],
     }
     
-    # Look for language subdirectories
-    language_dirs = [d for d in folder.iterdir() if d.is_dir() and not d.name.startswith('.')]
-    
-    if not language_dirs:
-        print(f"[WARNING] No language subdirectories found in {folder}")
-        return {}
-    
-    print(f"[INFO] Found language directories: {[d.name for d in language_dirs]}")
+    if language:
+        # Process only the specified language directory
+        lang_dir = folder / language
+        if not lang_dir.exists() or not lang_dir.is_dir():
+            print(f"[ERROR] Language directory '{language}' not found in {folder}")
+            return {}
+        
+        print(f"[INFO] Processing only language directory: {language}")
+        language_dirs = [lang_dir]
+    else:
+        # Look for all language subdirectories
+        language_dirs = [d for d in folder.iterdir() if d.is_dir() and not d.name.startswith('.')]
+        
+        if not language_dirs:
+            print(f"[WARNING] No language subdirectories found in {folder}")
+            return {}
+        
+        print(f"[INFO] Found language directories: {[d.name for d in language_dirs]}")
     
     for lang_dir in language_dirs:
         for split_name in expected_files.keys():
@@ -211,9 +221,10 @@ def build_dataset_dict(
     mono_weight: int,
     max_train: Union[int, None],
     style_prompt: Union[str, None],
-    seed: int
+    seed: int,
+    language: str = None
 ) -> DatasetDict:
-    files = detect_files(pre_dir)
+    files = detect_files(pre_dir, language)
     
     if not files:
         print("[ERROR] No valid files found!")
@@ -273,6 +284,8 @@ def main():
     ap.add_argument("--max_train", type=int, default=None, help="Optional cap on total train samples")
     ap.add_argument("--style_prompt", type=str, default="You respond concisely in Aleks' natural tone.",
                     help="System prompt used for mono samples")
+    ap.add_argument("--language", type=str, default=None,
+                    help="Process only a specific language directory (e.g., 'english')")
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
 
@@ -297,7 +310,8 @@ def main():
         mono_weight=args.mono_weight,
         max_train=args.max_train,
         style_prompt=args.style_prompt,
-        seed=args.seed
+        seed=args.seed,
+        language=args.language
     )
 
     # Quick stats
