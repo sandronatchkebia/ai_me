@@ -347,5 +347,4 @@ data/
 fine_tuning/dataset/
 fine_tuning/out/
 fine_tuning/models/
-pre_processing/
 testing.py
